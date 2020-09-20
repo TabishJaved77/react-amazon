@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from "react";
-import CheckoutProduct from "./CheckoutProduct";
+import React, { useState, useEffect } from "react";
 import "./Payment.css";
 import { useStateValue } from "./StateProvider";
+import CheckoutProduct from "./CheckoutProduct";
 import { Link, useHistory } from "react-router-dom";
-import { CardElement, useElements, useStripe } from "@stripe/react-stripe-js";
+import { CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
 import CurrencyFormat from "react-currency-format";
 import { getCartTotal } from "./reducer";
-import axios from "axios";
+import axios from "./axios";
 import { db } from "./firebase";
 
 function Payment() {
@@ -22,6 +22,10 @@ function Payment() {
   const [disabled, setDisabled] = useState(true);
   const [clientSecret, setClientSecret] = useState(true);
 
+  if (typeof jsvariable == "undefined") {
+    // id;
+  }
+
   useEffect(() => {
     // generate the special stripe secret which allows us to charge a customer
     const getClientSecret = async () => {
@@ -32,6 +36,7 @@ function Payment() {
       });
       setClientSecret(response.data.clientSecret);
     };
+
     getClientSecret();
   }, [cart]);
 
@@ -50,8 +55,6 @@ function Payment() {
         },
       })
       .then(({ paymentIntent }) => {
-        // paymentIntent = payment confirmation
-
         db.collection("users")
           .doc(user?.uid)
           .collection("orders")
@@ -74,23 +77,24 @@ function Payment() {
       });
   };
 
-  const handleChange = async (event) => {
-    //Listen for changes in the CardElement & display any errors as the customer types their card details
+  const handleChange = (event) => {
+    // Listen for changes in the CardElement
+    // and display any errors as the customer types their card details
     setDisabled(event.empty);
     setError(event.error ? event.error.message : "");
   };
 
   return (
-    <div classname="payment">
+    <div className="payment">
       <div className="payment_container">
         <h1>
-          Checkout(<Link to="/checkout">{cart?.length} items</Link>)
+          Checkout (<Link to="/checkout">{cart?.length} items</Link>)
         </h1>
 
-        {/* Payment section - delivery address.. */}
+        {/* Payment section - delivery address */}
         <div className="payment_section">
           <div className="payment_title">
-            <h3>Delivery Address:</h3>
+            <h3>Delivery Address</h3>
           </div>
           <div className="payment_address">
             <p>{user?.email}</p>
@@ -99,10 +103,10 @@ function Payment() {
           </div>
         </div>
 
-        {/* Payment section - Review items.. */}
+        {/* Payment section - Review Items */}
         <div className="payment_section">
           <div className="payment_title">
-            <h3>Review items and delivery:</h3>
+            <h3>Review items and delivery</h3>
           </div>
           <div className="payment_items">
             {cart.map((item) => (
@@ -116,25 +120,23 @@ function Payment() {
             ))}
           </div>
         </div>
-        {/* Payment section - Payment method.. */}
+
+        {/* Payment section - Payment method */}
         <div className="payment_section">
           <div className="payment_title">
-            <h3>Payment method:</h3>
+            <h3>Payment Method</h3>
           </div>
           <div className="payment_details">
-            {/* Stripe magic here... */}
+            {/* Stripe magic will go */}
+
             <form onSubmit={handleSubmit}>
               <CardElement onChange={handleChange} />
 
               <div className="payment_priceContainer">
                 <CurrencyFormat
-                  renderText={(value) => (
-                    <>
-                      <h3>Order Total: {value}</h3>
-                    </>
-                  )}
+                  renderText={(value) => <h3>Order Total: {value}</h3>}
                   decimalScale={2}
-                  value={getCartTotal(cart)} //homework
+                  value={getCartTotal(cart)}
                   displayType={"text"}
                   thousandSeparator={true}
                   prefix={"$"}

@@ -8,7 +8,8 @@ import { auth } from "./firebase";
 
 function Header() {
   const [{ cart, user }, dispatch] = useStateValue();
-  const handleAuthentication = () => {
+
+  const handleAuthenticaton = () => {
     if (user) {
       auth.signOut();
     }
@@ -31,7 +32,7 @@ function Header() {
 
       <div className="header_nav">
         <Link to={!user && "/login"}>
-          <div className="header_option" onClick={handleAuthentication}>
+          <div onClick={handleAuthenticaton} className="header_option">
             <span className="header_optionLineOne">
               Hello {user ? user.email : ", Guest"}
             </span>
@@ -40,12 +41,14 @@ function Header() {
             </span>
           </div>
         </Link>
+
         <Link to="/orders">
           <div className="header_option">
             <span className="header_optionLineOne">Returns</span>
             <span className="header_optionLineTwo">& Orders</span>
           </div>
         </Link>
+
         <div className="header_option">
           <span className="header_optionLineOne">Your</span>
           <span className="header_optionLineTwo">Prime</span>
